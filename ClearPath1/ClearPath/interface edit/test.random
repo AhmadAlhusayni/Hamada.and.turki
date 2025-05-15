@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ClearPath Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    /* Additional dashboard styles you can customize */
+    .dashboard-container {
+      padding: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+    
+    .logout-btn {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 14px;
+      transition: color 0.3s ease;
+    }
+    
+    .logout-btn:hover {
+      color: var(--light-blue);
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <div class="dashboard-header">
+      <h1>Welcome to Your Dashboard, <span id="username-display">User</span>!</h1>
+      <button class="logout-btn" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+    
+    <!-- Your dashboard content will go here -->
+    <div class="dashboard-content">
+      <h2>Dashboard Content</h2>
+      <p>This is a placeholder dashboard that you can customize with your own content.</p>
+    </div>
+  </div>
+
+  <script>
+    // Simple script to display the username and handle logout
+    document.addEventListener('DOMContentLoaded', function() {
+      // Get current user from localStorage
+      const currentUser = JSON.parse(localStorage.getItem('taskflow_current_user'));
+      
+      // If no user is logged in, redirect back to the login page
+      if (!currentUser) {
+        window.location.href = 'index.html';
+        return;
+      }
+      
+      // Display username
+      const usernameDisplay = document.getElementById('username-display');
+      if (usernameDisplay) {
+        usernameDisplay.textContent = currentUser.username;
+      }
+      
+      // Logout functionality
+      const logoutBtn = document.getElementById('logout-btn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+          localStorage.removeItem('taskflow_current_user');
+          window.location.href = 'index.html';
+        });
+      }
+    });
+  </script>
+</body>
+</html>
