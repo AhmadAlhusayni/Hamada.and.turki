@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Login System</title>
+    <style>
+        :root {
+            --black: #0a0a0a;
+            --dark-blue: #121e2d;
+            --blue: #1e3a5f;
+            --light-blue: #3498db;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--black);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 420px;
+            padding: 20px;
+        }
+        
+        .login-card {
+            background-color: var(--dark-blue);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .login-header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+        
+        .login-header p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .form-control {
+            width: 100%;
+            background-color: var(--blue);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.2s ease;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--light-blue);
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.25);
+        }
+        
+        .btn {
+            width: 100%;
+            background-color: var(--light-blue);
+            color: #fff;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn:active {
+            transform: scale(0.98);
+        }
+        
+        .btn:disabled {
+            background-color: rgba(52, 152, 219, 0.5);
+            cursor: not-allowed;
+        }
+        
+        .otp-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .otp-input {
+            width: 48px;
+            height: 54px;
+            background-color: var(--blue);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #fff;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+        
+        .otp-input:focus {
+            outline: none;
+            border-color: var(--light-blue);
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.25);
+        }
+        
+        .resend {
+            display: block;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+            margin-top: 20px;
+            text-decoration: none;
+        }
+        
+        .resend:hover {
+            color: var(--light-blue);
+        }
+        
+        .timer {
+            color: var(--light-blue);
+            font-weight: 600;
+        }
+        
+        .status-message {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+            padding: 10px;
+            border-radius: 6px;
+            display: none;
+        }
+        
+        .status-message.success {
+            background-color: rgba(39, 174, 96, 0.2);
+            color: #2ecc71;
+            display: block;
+        }
+        
+        .status-message.error {
+            background-color: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+            display: block;
+        }
+        
+        .slide-up {
+            transform: translateY(20px);
+            opacity: 0;
+            animation: slide-up 0.3s forwards;
+        }
+        
+        @keyframes slide-up {
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Login Panel -->
+        <div class="login-card slide-up" id="login-panel">
+            <div class="login-header">
+                <h1>Welcome Back</h1>
+                <p>Enter your phone number to log in</p>
+            </div>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" class="form-control" placeholder="+1 (123) 456-7890" required>
+                </div>
+                <button type="submit" class="btn" id="request-otp-btn">Request OTP</button>
+            </form>
+        </div>
+        
+        <!-- OTP Verification Panel -->
+        <div class="login-card slide-up hidden" id="otp-panel">
+            <div class="login-header">
+                <h1>Verify Your Identity</h1>
+                <p>Enter the 6-digit code sent to your phone</p>
+            </div>
+            <form id="otp-form">
+                <div class="otp-container">
+                    <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" required>
+                    <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" required>
+                    <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" required>
+                    <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" required>
+                    <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" required>
+                    <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" required>
+                </div>
+                <button type="submit" class="btn" id="verify-otp-btn">Verify & Login</button>
+                <a href="#" class="resend" id="resend-link">Resend code in <span class="timer" id="timer">01:30</span></a>
+                <div class="status-message" id="status-message"></div>
+            </form>
+        </div>
+        
+        <!-- Success Panel -->
+        <div class="login-card slide-up hidden" id="success-panel">
+            <div class="login-header">
+                <h1>Login Successful!</h1>
+                <p>You are now logged in to your account</p>
+            </div>
+            <button class="btn" id="logout-btn">Continue</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const loginPanel = document.getElementById('login-panel');
+            const otpPanel = document.getElementById('otp-panel');
+            const successPanel = document.getElementById('success-panel');
+            const loginForm = document.getElementById('login-form');
+            const otpForm = document.getElementById('otp-form');
+            const requestOtpBtn = document.getElementById('request-otp-btn');
+            const verifyOtpBtn = document.getElementById('verify-otp-btn');
+            const logoutBtn = document.getElementById('logout-btn');
+            const resendLink = document.getElementById('resend-link');
+            const timerElement = document.getElementById('timer');
+            const statusMessage = document.getElementById('status-message');
+            const otpInputs = document.querySelectorAll('.otp-input');
+            
+            // Variables
+            let phoneNumber = '';
+            let correctOtp = '';
+            let remainingTime = 90; // 1:30 in seconds
+            let timerInterval;
+            
+            // Generate a random 6-digit OTP
+            function generateOTP() {
+                return Math.floor(100000 + Math.random() * 900000).toString();
+            }
+            
+            // Format timer as MM:SS
+            function formatTime(seconds) {
+                const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+                const secs = (seconds % 60).toString().padStart(2, '0');
+                return `${mins}:${secs}`;
+            }
+            
+            // Start countdown timer
+            function startTimer() {
+                remainingTime = 90;
+                timerElement.textContent = formatTime(remainingTime);
+                resendLink.classList.add('disabled');
+                
+                clearInterval(timerInterval);
+                timerInterval = setInterval(() => {
+                    remainingTime--;
+                    timerElement.textContent = formatTime(remainingTime);
+                    
+                    if (remainingTime <= 0) {
+                        clearInterval(timerInterval);
+                        resendLink.textContent = 'Resend code';
+                        resendLink.classList.remove('disabled');
+                    }
+                }, 1000);
+            }
+            
+            // Handle OTP input focus and auto-tab
+            otpInputs.forEach((input, index) => {
+                // Auto focus first input
+                if (index === 0) {
+                    input.addEventListener('focus', function() {
+                        setTimeout(() => {
+                            this.select();
+                        }, 100);
+                    });
+                }
+                
+                // Handle input
+                input.addEventListener('input', function() {
+                    // Only allow numbers
+                    this.value = this.value.replace(/[^0-9]/g, '');
+                    
+                    // Auto-tab to next input
+                    if (this.value && index < otpInputs.length - 1) {
+                        otpInputs[index + 1].focus();
+                    }
+                });
+                
+                // Handle backspace
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Backspace' && !this.value && index > 0) {
+                        otpInputs[index - 1].focus();
+                    }
+                });
+                
+                // Handle paste
+                input.addEventListener('paste', function(e) {
+                    e.preventDefault();
+                    const paste = (e.clipboardData || window.clipboardData).getData('text');
+                    if (!paste.match(/^\d+$/)) return; // Only allow numbers
+                    
+                    // Fill inputs with pasted digits
+                    const digits = paste.split('');
+                    for (let i = 0; i < otpInputs.length; i++) {
+                        if (i < digits.length) {
+                            otpInputs[i].value = digits[i];
+                        }
+                    }
+                    
+                    // Focus the next empty input or the last one
+                    const unfilled = Array.from(otpInputs).findIndex(input => !input.value);
+                    if (unfilled === -1) {
+                        otpInputs[otpInputs.length - 1].focus();
+                    } else {
+                        otpInputs[unfilled].focus();
+                    }
+                });
+            });
+            
+            // Request OTP
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const phone = document.getElementById('phone').value.trim();
+                
+                // Basic validation
+                if (!phone) {
+                    showStatus('Please enter a valid phone number', 'error');
+                    return;
+                }
+                
+                // In a real app, you'd send this to your backend
+                phoneNumber = phone;
+                correctOtp = generateOTP();
+                
+                // For demo purposes, show the OTP (in a real app, this would be sent to the user's phone)
+                console.log('Generated OTP:', correctOtp);
+                
+                // Switch to OTP panel
+                loginPanel.classList.add('hidden');
+                otpPanel.classList.remove('hidden');
+                
+                // Focus first OTP input
+                setTimeout(() => {
+                    otpInputs[0].focus();
+                }, 300);
+                
+                // Start timer
+                startTimer();
+                
+                // Show status
+                showStatus(`OTP sent to ${phoneNumber}. For demo: ${correctOtp}`, 'success');
+            });
+            
+            // Verify OTP
+            otpForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Get entered OTP
+                let enteredOtp = '';
+                otpInputs.forEach(input => {
+                    enteredOtp += input.value;
+                });
+                
+                // Validate complete OTP
+                if (enteredOtp.length !== 6) {
+                    showStatus('Please enter all 6 digits', 'error');
+                    return;
+                }
+                
+                // Check if OTP is correct
+                if (enteredOtp === correctOtp) {
+                    // Success! In a real app, you'd send this to your backend for verification
+                    clearInterval(timerInterval);
+                    otpPanel.classList.add('hidden');
+                    successPanel.classList.remove('hidden');
+                } else {
+                    showStatus('Invalid OTP. Please try again.', 'error');
+                    
+                    // Clear inputs for retry
+                    otpInputs.forEach(input => {
+                        input.value = '';
+                    });
+                    otpInputs[0].focus();
+                }
+            });
+            
+            // Resend OTP
+            resendLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                if (remainingTime > 0) return; // Don't allow resend if timer is still running
+                
+                // Generate new OTP
+                correctOtp = generateOTP();
+                console.log('New OTP:', correctOtp);
+                
+                // Restart timer
+                startTimer();
+                
+                // Update status
+                showStatus(`New OTP sent to ${phoneNumber}. For demo: ${correctOtp}`, 'success');
+                
+                // Reset inputs
+                otpInputs.forEach(input => {
+                    input.value = '';
+                });
+                otpInputs[0].focus();
+            });
+            
+            // Logout button
+            logoutBtn.addEventListener('click', function() {
+                // Reset everything
+                window.location.href = 'dashboard.html';
+                
+                // Clear timer
+                clearInterval(timerInterval);
+                
+                // Reset panels
+                successPanel.classList.add('hidden');
+                loginPanel.classList.remove('hidden');
+            });
+            
+            // Show status message
+            function showStatus(message, type) {
+                statusMessage.textContent = message;
+                statusMessage.className = 'status-message';
+                statusMessage.classList.add(type);
+                
+                // Auto hide after 5 seconds for success messages
+                if (type === 'success') {
+                    setTimeout(() => {
+                        statusMessage.classList.remove('success');
+                    }, 5000);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

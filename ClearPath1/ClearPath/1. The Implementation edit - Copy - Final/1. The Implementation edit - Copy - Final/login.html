@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do Application</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+    <!-- Modal Overlay -->
+    <div class="modal-overlay"></div>
+
+    <!-- Login Tab -->
+    <div id="login" class="tab active popup">
+        <h2>Login</h2>
+        <label for="username">Enter your name:</label>
+        <input type="text" id="username" placeholder="Example: Mohammed" aria-label="Enter your name"><br>
+        <label for="password">Enter your password:</label>
+        <input type="password" id="password" placeholder="••••••••" aria-label="Enter your password"><br>
+        <button onclick="login()">Login</button>
+    </div>
+
+    <!-- To-Do List Tab -->
+    <div id="todo-list" class="tab popup">
+        <h2>To-Do List</h2>
+        <!-- Display Username -->
+        <h3 id="username-display"></h3>
+
+        <div id="user-list">
+            <!-- Tasks will dynamically appear here -->
+        </div>
+        <div class="button-container">
+            <button onclick="openTaskCreation()">Create Task</button>
+            <button onclick="goBackToLogin()">Back to Login</button>
+        </div>
+    </div>
+
+    <!-- Task Creation Tab -->
+    <div id="task-creation" class="tab popup">
+        <h2>Task Creation</h2>
+        <label for="task">Task:</label>
+        <input type="text" id="task" placeholder="Write your task here"><br>
+        <label for="priority">Priority (1-5):</label>
+        <input type="number" id="priority" min="1" max="5" placeholder="1"><br>
+        <label for="days-to-finish">How many days it takes to finish:</label>
+        <input type="number" id="days-to-finish" min="1" placeholder="1"><br>
+        <label for="deadline">Deadline:</label>
+        <input type="date" id="deadline"><br>
+        <label for="difficulty">Difficulty:</label>
+        <div id="difficulty" class="button-group">
+            <button onclick="selectDifficulty('Easy')">Easy</button>
+            <button onclick="selectDifficulty('Mid')">Mid</button>
+            <button onclick="selectDifficulty('Hard')">Hard</button>
+        </div><br>
+        <button onclick="submitTask()">Submit Task</button>
+    </div>
+
+    <!-- Success Tab -->
+    <div id="success" class="tab popup">
+        <h2>Data Saved Successfully</h2>
+        <div id="success-message">
+            <!-- Task details will appear here -->
+        </div>
+        <div class="button-container">
+            <button onclick="goBackToList()">Back to To-Do List</button>
+            <button onclick="goBackToLogin()">Back to Login</button>
+        </div>
+    </div>
+
+    <!-- Task Container Template -->
+    <div id="task-template" class="task-container" style="display:none;">
+        <strong>Task:</strong> <span class="task-name"></span><br>
+        <strong>Priority:</strong> <span class="task-priority"></span><br>
+        <strong>Days to Finish:</strong> <span class="task-days"></span><br>
+        <strong>Deadline:</strong> <span class="task-deadline"></span><br>
+        <strong>Difficulty:</strong> <span class="task-difficulty"></span><br>
+        <span class="status"></span><br>
+        <div class="task-buttons">
+            <button class="done-btn">Done</button>
+            <button class="edit-btn">Edit</button>
+            <button class="delete-btn">Delete</button>
+            <!-- Notification Icon -->
+            <span class="notification-icon" onclick="remindTask(this)" title="Remind me later">&#128276;</span>
+        </div>
+    </div>
+
+    <script src="js/scripts.js"></script>
+</body>
+
+</html>
